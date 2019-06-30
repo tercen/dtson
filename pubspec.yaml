@@ -5,10 +5,12 @@ author: am <alexandre.maurel@gmail.com>
 homepage: https://github.com/amaurel/TSON
 
 environment:
-  sdk: '>=1.0.0 <2.0.0'
+  sdk: '>=2.0.0 <3.0.0'
 
 dependencies:
   typed_data: any
 
 dev_dependencies:
-  test: '>=0.12.0 <0.13.0'
+  test:
+  build_runner:
+  build_web_compilers:

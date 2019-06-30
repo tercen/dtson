@@ -7,7 +7,7 @@ import 'package:tson/tson.dart' as TSON;
 import 'dart:typed_data' as td;
 
 encodeDecode(object, [expectedObject]) async {
-//  print('object = ${JSON.encode(object)}');
+//  print('object = ${json.encode(object)}');
   var bytes = await TSON.encodeAsync(object);
 //  print('tson bytes = $bytes');
   if (expectedObject == null){

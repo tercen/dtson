@@ -63,7 +63,7 @@ class _StreamSerializer {
   }
 
   _addLength(int len) {
-    _byte4DataBuffer.setUint32(0, len, td.Endianness.LITTLE_ENDIAN);
+    _byte4DataBuffer.setUint32(0, len, td.Endian.little);
     _addController(_byte4Buffer);
   }
 
@@ -80,13 +80,13 @@ class _StreamSerializer {
 
   _addInt(int object) {
     _addType(TsonSpec.INTEGER_TYPE);
-    _byte4DataBuffer.setInt32(0, object, td.Endianness.LITTLE_ENDIAN);
+    _byte4DataBuffer.setInt32(0, object, td.Endian.little);
     _addController(_byte4Buffer);
   }
 
   _addDouble(double object) {
     _addType(TsonSpec.DOUBLE_TYPE);
-    _byte8DataBuffer.setFloat64(0, object, td.Endianness.LITTLE_ENDIAN);
+    _byte8DataBuffer.setFloat64(0, object, td.Endian.little);
     _addController(_byte8Buffer);
   }
 

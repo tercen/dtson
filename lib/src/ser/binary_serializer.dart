@@ -38,7 +38,8 @@ class _BinarySerializer {
   }
 
   _addLength(int len) {
-    _byteData.setUint32(_byteOffset, len, td.Endianness.LITTLE_ENDIAN);
+
+    _byteData.setUint32(_byteOffset, len, td.Endian.little);
     _byteOffset += 4;
   }
 
@@ -55,7 +56,7 @@ class _BinarySerializer {
   //Null terminated string
   _addString(String object) {
     _addType(TsonSpec.STRING_TYPE);
-    var bytes = UTF8.encode(object);
+    var bytes = utf8.encode(object);
     _bytes.setRange(_byteOffset, _byteOffset + bytes.length, bytes);
     _byteOffset += bytes.length;
     _byteData.setUint8(_byteOffset, 0);
@@ -64,13 +65,13 @@ class _BinarySerializer {
 
   _addInt(int object) {
     _addType(TsonSpec.INTEGER_TYPE);
-    _byteData.setInt32(_byteOffset, object, td.Endianness.LITTLE_ENDIAN);
+    _byteData.setInt32(_byteOffset, object, td.Endian.little);
     _byteOffset += 4;
   }
 
   _addDouble(double object) {
     _addType(TsonSpec.DOUBLE_TYPE);
-    _byteData.setFloat64(_byteOffset, object, td.Endianness.LITTLE_ENDIAN);
+    _byteData.setFloat64(_byteOffset, object, td.Endian.little);
     _byteOffset += 8;
   }
 
@@ -115,7 +116,7 @@ class _BinarySerializer {
     } else {
       throw new TsonError(404, "unknown.typed.data", "unknown typed data");
     }
-    _byteData.setUint32(_byteOffset, len, td.Endianness.LITTLE_ENDIAN);
+    _byteData.setUint32(_byteOffset, len, td.Endian.little);
     _byteOffset += 4;
     var bytes = new td.Uint8List.view(
         object.buffer, object.offsetInBytes, len * object.elementSizeInBytes);
@@ -203,7 +204,7 @@ class _BinarySerializer {
     if (object == null) {
       sizeInBytes += 0;
     } else if (object is String) {
-      var bytes = UTF8.encode(object);
+      var bytes = utf8.encode(object);
       sizeInBytes += bytes.length + TsonSpec.NULL_TERMINATED_LENGTH_IN_BYTES;
     } else if (object is int) {
       sizeInBytes += 4;
@@ -248,7 +249,7 @@ class _BinarySerializer {
   String _readString() {
     var start = _byteOffset;
     while (_byteData.getUint8(_byteOffset) != 0) _byteOffset++;
-    var answer = UTF8.decode(new td.Uint8List.view(_bytes.buffer,
+    var answer = utf8.decode(new td.Uint8List.view(_bytes.buffer,
         _bytes.offsetInBytes +start,  _byteOffset - start));
     //new String.fromCharCodes(_bytes, start, _byteOffset);
     _byteOffset++; //skip null
@@ -256,13 +257,13 @@ class _BinarySerializer {
   }
 
   int _readInteger() {
-    var answer = _byteData.getInt32(_byteOffset, td.Endianness.LITTLE_ENDIAN);
+    var answer = _byteData.getInt32(_byteOffset, td.Endian.little);
     _byteOffset += 4;
     return answer;
   }
 
   double _readDouble() {
-    var answer = _byteData.getFloat64(_byteOffset, td.Endianness.LITTLE_ENDIAN);
+    var answer = _byteData.getFloat64(_byteOffset, td.Endian.little);
     _byteOffset += 8;
     return answer;
   }
@@ -283,7 +284,7 @@ class _BinarySerializer {
   }
 
   int _readLength() {
-    final len = _byteData.getUint32(_byteOffset, td.Endianness.LITTLE_ENDIAN);
+    final len = _byteData.getUint32(_byteOffset, td.Endian.little);
     _byteOffset += 4;
     return len;
   }

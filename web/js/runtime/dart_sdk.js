@@ -10765,7 +10765,7 @@ dart_library.library('dart_sdk', null, /* Imports */[
   };
   dart.fn(_js_helper.random64, VoidToint());
   _js_helper.jsonEncodeNative = function(string) {
-    return JSON.stringify(string);
+    return json.stringify(string);
   };
   dart.lazyFn(_js_helper.jsonEncodeNative, () => StringToString$());
   const _jsIterator = Symbol('_jsIterator');
@@ -27593,7 +27593,7 @@ dart_library.library('dart_sdk', null, /* Imports */[
         }
         return string[dartx.codeUnits];
       }
-      return convert.UTF8.encode(string);
+      return convert.utf8.encode(string);
     }
     convert(object) {
       let bytes = JSArrayOfListOfint().of([]);
@@ -27739,7 +27739,7 @@ dart_library.library('dart_sdk', null, /* Imports */[
     if (!(typeof source == 'string')) dart.throw(_js_helper.argumentErrorValue(source));
     let parsed = null;
     try {
-      parsed = JSON.parse(source);
+      parsed = json.parse(source);
     } catch (e) {
       dart.throw(new core.FormatException(String(e)));
     }

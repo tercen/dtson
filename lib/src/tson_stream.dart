@@ -21,7 +21,7 @@ class TsonStreamDecoderTransformer
       throw new ArgumentError.value(bytes.length,
           'TsonStreamDecoderTransformer.readLength : wrong length');
     return new ByteData.view(bytes.buffer)
-        .getUint32(bytes.offsetInBytes, Endianness.LITTLE_ENDIAN);
+        .getUint32(bytes.offsetInBytes, Endian.little);
   }
 
   StreamTransformer _transformer;
@@ -34,7 +34,7 @@ class TsonStreamDecoderTransformer
     _buffer = new Uint8List(0);
   }
 
-  void handleData(List<int> data, EventSink<Object> sink) {
+  void handleData(data, EventSink<Object> sink) {
 //    print('$this handleData data.length=${data.length} ');
     _addBuffer(data);
     _readObject(sink);
@@ -70,6 +70,9 @@ class TsonStreamDecoderTransformer
 
   @override
   Stream<Object> bind(Stream<List> stream) => _transformer.bind(stream);
+
+  @override
+  StreamTransformer<RS, RT> cast<RS, RT>() => StreamTransformer.castFrom(this);
 }
 
 class TsonStreamEncoderTransformer
@@ -78,7 +81,7 @@ class TsonStreamEncoderTransformer
     var bytes = TSON.encode(object);
     var result = new Uint8List(bytes.length + 4);
     var byteData = new ByteData.view(result.buffer);
-    byteData.setUint32(0, bytes.length, Endianness.LITTLE_ENDIAN);
+    byteData.setUint32(0, bytes.length, Endian.little);
     result.setRange(4, result.length, bytes);
 
     return result;
@@ -95,6 +98,9 @@ class TsonStreamEncoderTransformer
 
   @override
   Stream<List<int>> bind(Stream<dynamic> stream) => _transformer.bind(stream);
+
+  @override
+  StreamTransformer<RS, RT> cast<RS, RT>() => StreamTransformer.castFrom(this);
 }
 
 
