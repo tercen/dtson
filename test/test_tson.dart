@@ -43,6 +43,7 @@ main() {
       print(bytes);
     });
 
+
     test('Simple map 2', () {
       var bytes = TSON.encode({"a": "a", "d": 42.0});
       print(bytes);

@@ -9,7 +9,9 @@ class _BinarySerializer {
   
 
   _BinarySerializer.from(object) {
-    
+//    if (object is List<String>) {
+//      object = new  CStringList.fromList(object);
+//    }
     _initializeFromObject(object);
   }
 
