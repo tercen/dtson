@@ -1,14 +1,17 @@
 library tson;
 
+import 'dart:math';
 import 'dart:typed_data' as td;
 import 'dart:async';
 import 'dart:convert';
+import 'package:chunked_stream/chunked_stream.dart';
 
 import 'package:typed_data/typed_data.dart' as tb;
 
 import 'string_list.dart';
 part './ser/binary_serializer.dart';
 part './ser/stream_serializer.dart';
+part './ser/stream_deser.dart';
 
 td.Uint8List encode(object) {
   return new _BinarySerializer.from(object).toBytes();

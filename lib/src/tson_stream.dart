@@ -8,7 +8,7 @@ class TsonStreamDecoderTransformer
     implements StreamTransformer<List<int>, Object> {
   static Object decode(Uint8List bytes) {
     final len = readLength(bytes);
-    if (bytes.length  < len + 4)
+    if (bytes.length < len + 4)
 //    if (bytes.length + 4 < len)
       throw new ArgumentError.value(
           len, 'TsonStreamDecoderTransformer.decode : wrong length');
@@ -55,8 +55,8 @@ class TsonStreamDecoderTransformer
 
     var len = readLength(_buffer);
 
-      if (_buffer.length  >= len + 4) {
-       sink.add(decode(_buffer));
+    if (_buffer.length >= len + 4) {
+      sink.add(decode(_buffer));
       _buffer = _buffer.sublist(len + 4);
       _readObject(sink);
     }
@@ -103,18 +103,17 @@ class TsonStreamEncoderTransformer
   StreamTransformer<RS, RT> cast<RS, RT>() => StreamTransformer.castFrom(this);
 }
 
-
-StreamSinkTransformer<Map, List<int>> streamSinkTransformer(){
-  return new StreamSinkTransformer.fromHandlers(handleData : (Map data, EventSink<List<int>> sink){
+StreamSinkTransformer<Map, List<int>> streamSinkTransformer() {
+  return new StreamSinkTransformer.fromHandlers(
+      handleData: (Map data, EventSink<List<int>> sink) {
     sink.add(TSON.encode(data));
-  }, handleError: (Object error, StackTrace stackTrace, EventSink<List<int>> sink){
-    sink.addError(error,stackTrace);
-  }, handleDone: (EventSink<List<int>> sink){
+  }, handleError:
+          (Object error, StackTrace stackTrace, EventSink<List<int>> sink) {
+    sink.addError(error, stackTrace);
+  }, handleDone: (EventSink<List<int>> sink) {
     sink.close();
-  } );
+  });
 }
-
-
 
 //class TsonSink {
 //  StreamController<List<int>> _controller;

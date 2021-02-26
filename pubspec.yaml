@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   typed_data:
+  chunked_stream: ^1.2.0
 
 dev_dependencies:
   test:
