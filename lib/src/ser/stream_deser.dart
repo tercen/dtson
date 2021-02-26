@@ -8,7 +8,7 @@ class _StreamDeserializer {
     this.reader = utils.ChunkedStreamIterator(stream);
   }
 
-  Future<List<int>> read(int size) async {
+  Future<td.Uint8List> read(int size) async {
     var bytes = await reader.readBytes(size);
     if (bytes.length < size) throw 'EOF';
     return bytes;
@@ -79,28 +79,28 @@ class _StreamDeserializer {
   Future<int> _readLength() => _readUint32();
 
   Future<int> _readUint32() async {
-    var bytes = td.Uint8List.fromList(await read(4));
+    var bytes = await read(4);
     return bytes.buffer.asByteData().getUint32(0, td.Endian.little);
   }
 
   Future<int> _readInteger() async {
-    var bytes = td.Uint8List.fromList(await read(4));
+    var bytes = await read(4);
     return bytes.buffer.asByteData().getInt32(0, td.Endian.little);
   }
 
   Future<double> _readDouble() async {
-    var bytes = td.Uint8List.fromList(await read(8));
+    var bytes = await read(8);
     return bytes.buffer.asByteData().getFloat64(0, td.Endian.little);
   }
 
   Future<bool> _readBool() async {
-    var bytes = td.Uint8List.fromList(await read(1));
-    return bytes.buffer.asByteData().getUint8(0) > 0;
+    var bytes = await read(1);
+    return bytes.first > 0;
   }
 
   Future<List> _readList() async {
     final len = await _readLength();
-    var answer = new List(len);
+    var answer = List(len);
     for (int i = 0; i < len; i++) {
       answer[i] = await _readObject();
     }
@@ -109,8 +109,7 @@ class _StreamDeserializer {
 
   Future<CStringList> _readCStringList() async {
     var lengthInBytes = await _readLength();
-    var bytes = td.Uint8List.fromList(await read(lengthInBytes));
-    return CStringList.fromBytes(bytes);
+    return CStringList.fromBytes(await read(lengthInBytes));
   }
 
   int _elementSizeFromType(int type) {
@@ -143,16 +142,15 @@ class _StreamDeserializer {
   Future<td.TypedData> _readTypedData(int type) async {
     final len = await _readLength();
     final elementSize = _elementSizeFromType(type);
-    var answer = td.Uint8List(elementSize * len);
-
-    var nRead = 0;
-
-    while (nRead < answer.length) {
-      var bufSize = min(8 * 1024 * 1024, answer.length - nRead);
-      var buf = await read(bufSize);
-      answer.setRange(nRead, nRead + buf.length, buf);
-      nRead += buf.length;
-    }
+    var answer = await read(elementSize * len)    ;
+    // var answer = td.Uint8List(elementSize * len);
+    // var nRead = 0;
+    // while (nRead < answer.length) {
+    //   var bufSize = min(8 * 1024 * 1024, answer.length - nRead);
+    //   var buf = await read(bufSize);
+    //   answer.setRange(nRead, nRead + buf.length, buf);
+    //   nRead += buf.length;
+    // }
 
     if (type == TsonSpec.LIST_UINT8_TYPE) {
       return answer;
