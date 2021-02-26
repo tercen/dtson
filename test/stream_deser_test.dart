@@ -10,17 +10,17 @@ main() {
     expect(result, equals(object));
   }
 
-  test('encode_decode', () async {
-    encode_decode([]);
-    encode_decode({});
-    encode_decode([null]);
-    encode_decode([1]);
-    encode_decode(["a", true, false, 42, 42.0]);
-    encode_decode(td.Int32List.fromList([42, 42]));
-    encode_decode(TSON.CStringList.fromList(["42.0", "42"]));
-    encode_decode({"a": "a", "d": 42.0});
-  });
 
+  test('encode_decode', () async {
+    await encode_decode([]);
+    await encode_decode({});
+    await encode_decode([null]);
+    await encode_decode([1]);
+    await encode_decode(["a", true, false, 42, 42.0]);
+    await encode_decode(td.Int32List.fromList([42, 42]));
+    await encode_decode(TSON.CStringList.fromList(["42.0", "42"]));
+    await encode_decode({"a": "a", "d": 42.0});
+  });
 
   test('all types', () async {
     var map = {

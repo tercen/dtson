@@ -1,7 +1,5 @@
 part of tson;
 
-
-
 class _StreamDeserializer {
   ChunkedStreamIterator<int> reader;
   dynamic object;
@@ -111,7 +109,7 @@ class _StreamDeserializer {
 
   Future<CStringList> _readCStringList() async {
     var lengthInBytes = await _readLength();
-    var bytes = await read(lengthInBytes);
+    var bytes = td.Uint8List.fromList(await read(lengthInBytes));
     return CStringList.fromBytes(bytes);
   }
 
