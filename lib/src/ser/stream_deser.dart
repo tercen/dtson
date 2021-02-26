@@ -1,7 +1,6 @@
 part of tson;
 
-Future<dynamic> deserializeStream(Stream<List<int>> stream) =>
-    _StreamDeserializer(stream).toObject();
+
 
 class _StreamDeserializer {
   ChunkedStreamIterator<int> reader;

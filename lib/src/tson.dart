@@ -17,6 +17,9 @@ td.Uint8List encode(object) {
   return new _BinarySerializer.from(object).toBytes();
 }
 
+Future<dynamic> deserializeStream(Stream<List<int>> stream) =>
+    _StreamDeserializer(stream).toObject();
+
 Future<td.Uint8List> encodeAsync(object) async {
   var s = stream(object);
   tb.Uint8Buffer buffer = await s.fold(new tb.Uint8Buffer(),
