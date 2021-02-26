@@ -4,8 +4,8 @@ import 'dart:math';
 import 'dart:typed_data' as td;
 import 'dart:async';
 import 'dart:convert';
-import 'package:chunked_stream/chunked_stream.dart';
-
+// import 'package:chunked_stream/chunked_stream.dart';
+import './utils/chunked_stream_iterator.dart' as utils;
 import 'package:typed_data/typed_data.dart' as tb;
 
 import 'string_list.dart';

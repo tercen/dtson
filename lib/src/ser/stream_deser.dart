@@ -1,15 +1,15 @@
 part of tson;
 
 class _StreamDeserializer {
-  ChunkedStreamIterator<int> reader;
+  utils.ChunkedStreamIterator<int> reader;
   dynamic object;
 
   _StreamDeserializer(Stream<List<int>> stream) {
-    this.reader = ChunkedStreamIterator(stream);
+    this.reader = utils.ChunkedStreamIterator(stream);
   }
 
   Future<List<int>> read(int size) async {
-    var bytes = await reader.read(size);
+    var bytes = await reader.readBytes(size);
     if (bytes.length < size) throw 'EOF';
     return bytes;
   }
