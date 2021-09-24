@@ -217,7 +217,7 @@ class _BinarySerializer {
     } else if (object is td.TypedData) {
       sizeInBytes += object.lengthInBytes + TsonSpec.ELEMENT_LENGTH_IN_BYTES;
     } else if (object is CStringList || object is List || object is Map) {
-      sizeInBytes += _computeMapOrListSize(object);
+      return _computeMapOrListSize(object);
     } else {
       return _computeObjectSize(object.toJson());
 //      throw new TsonError(404, "unknown.value.type",
