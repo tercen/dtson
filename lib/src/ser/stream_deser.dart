@@ -54,11 +54,10 @@ class _StreamDeserializer {
 
   Future<String> _readString() async {
     var buffer = tb.Uint8Buffer();
-    var byte = (await read(1)).first;
-    buffer.add(byte);
-    while (byte != 0) {
-      byte = (await read(1)).first;
-      if (byte > 0) buffer.add(byte);
+    var byte;
+
+    while ((byte = (await read(1)).first) > 0) {
+      buffer.add(byte);
     }
     return utf8.decode(buffer);
   }
@@ -68,9 +67,11 @@ class _StreamDeserializer {
     var answer = Map();
     for (int i = 0; i < len; i++) {
       var key = await _readObject();
-      if (key is! String)
+      if (key is! String) {
         throw TsonError(
             500, "wrong.map.key.format", "Map key must be a String");
+      }
+
       answer[key] = await _readObject();
     }
     return answer;
@@ -142,7 +143,7 @@ class _StreamDeserializer {
   Future<td.TypedData> _readTypedData(int type) async {
     final len = await _readLength();
     final elementSize = _elementSizeFromType(type);
-    var answer = await read(elementSize * len)    ;
+    var answer = await read(elementSize * len);
     // var answer = td.Uint8List(elementSize * len);
     // var nRead = 0;
     // while (nRead < answer.length) {

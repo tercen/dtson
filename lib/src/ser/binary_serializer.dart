@@ -1,12 +1,10 @@
 part of tson;
 
 class _BinarySerializer {
-
   td.Uint8List _bytes;
   td.ByteData _byteData;
   int _intByteOffset;
   int _byteOffset;
-  
 
   _BinarySerializer.from(object) {
 //    if (object is List<String>) {
@@ -40,7 +38,6 @@ class _BinarySerializer {
   }
 
   _addLength(int len) {
-
     _byteData.setUint32(_byteOffset, len, td.Endian.little);
     _byteOffset += 4;
   }
@@ -136,8 +133,9 @@ class _BinarySerializer {
     _addType(TsonSpec.MAP_TYPE);
     _addLength(object.length);
     object.forEach((k, v) {
-      if (k is! String) throw new TsonError(
-          500, "wrong.map.key.format", "Map key must be a String");
+      if (k is! String)
+        throw new TsonError(
+            500, "wrong.map.key.format", "Map key must be a String");
       _add(k);
       _add(v);
     });
@@ -184,8 +182,7 @@ class _BinarySerializer {
         size += _computeObjectSize(k);
         size += _computeObjectSize(v);
       });
-    }
-    else if (object is CStringList) {
+    } else if (object is CStringList) {
       size += object.lengthInBytes;
     } else if (object is td.TypedData) {
       size += object.lengthInBytes;
@@ -194,8 +191,8 @@ class _BinarySerializer {
         size += _computeObjectSize(v);
       });
     } else {
-      throw new TsonError(404, "unknown.value.type",
-          "Unknow value type 2: ${object}");
+      throw new TsonError(
+          404, "unknown.value.type", "Unknow value type 2: ${object}");
     }
 
     return size;
@@ -203,21 +200,21 @@ class _BinarySerializer {
 
   int _computeObjectSize(object) {
     var sizeInBytes = TsonSpec.TYPE_LENGTH_IN_BYTES;
-    if (object == null) {
-      sizeInBytes += 0;
-    } else if (object is String) {
+    if (object is String) {
       var bytes = utf8.encode(object);
       sizeInBytes += bytes.length + TsonSpec.NULL_TERMINATED_LENGTH_IN_BYTES;
-    } else if (object is int) {
-      sizeInBytes += 4;
+    } else if (object is CStringList || object is List || object is Map) {
+      return _computeMapOrListSize(object);
     } else if (object is double) {
       sizeInBytes += 8;
+    } else if (object is int) {
+      sizeInBytes += 4;
     } else if (object is bool) {
       sizeInBytes += 1;
     } else if (object is td.TypedData) {
       sizeInBytes += object.lengthInBytes + TsonSpec.ELEMENT_LENGTH_IN_BYTES;
-    } else if (object is CStringList || object is List || object is Map) {
-      return _computeMapOrListSize(object);
+    } else if (object == null) {
+      sizeInBytes += 0;
     } else {
       return _computeObjectSize(object.toJson());
 //      throw new TsonError(404, "unknown.value.type",
@@ -231,8 +228,9 @@ class _BinarySerializer {
   Object toObject() {
     _byteOffset = _intByteOffset;
     var version = _readObject();
-    if (version != TsonSpec.VERSION) throw new TsonError(500, "version.mismatch",
-        "TSON version mismatch, found : $version , expected : ${TsonSpec.VERSION}");
+    if (version != TsonSpec.VERSION)
+      throw new TsonError(500, "version.mismatch",
+          "TSON version mismatch, found : $version , expected : ${TsonSpec.VERSION}");
     return _readObject();
   }
 
@@ -241,8 +239,11 @@ class _BinarySerializer {
     var answer = new Map();
     for (int i = 0; i < len; i++) {
       var key = _readObject();
-      if (key is! String) throw new TsonError(
-          500, "wrong.map.key.format", "Map key must be a String");
+      if (key is! String) {
+        throw new TsonError(
+            500, "wrong.map.key.format", "Map key must be a String");
+      }
+
       answer[key] = _readObject();
     }
     return answer;
@@ -251,8 +252,8 @@ class _BinarySerializer {
   String _readString() {
     var start = _byteOffset;
     while (_byteData.getUint8(_byteOffset) != 0) _byteOffset++;
-    var answer = utf8.decode(new td.Uint8List.view(_bytes.buffer,
-        _bytes.offsetInBytes +start,  _byteOffset - start));
+    var answer = utf8.decode(new td.Uint8List.view(
+        _bytes.buffer, _bytes.offsetInBytes + start, _byteOffset - start));
     //new String.fromCharCodes(_bytes, start, _byteOffset);
     _byteOffset++; //skip null
     return answer;
@@ -331,7 +332,6 @@ class _BinarySerializer {
     final elementSize = _elementSizeFromType(type);
     var answer = new td.Uint8List(len * elementSize);
     answer.setRange(0, answer.length, _bytes, _byteOffset);
-
 
     _byteOffset += answer.length;
 
