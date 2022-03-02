@@ -2,10 +2,9 @@ import 'dart:collection';
 import 'dart:typed_data' as td;
 import 'dart:convert';
 
-class CStringList  extends ListBase<String> implements List<String>  {
-
+class CStringList extends ListBase<String> implements List<String> {
   td.Uint8List _bytes;
-  td.Int32List _starts;
+  td.Uint64List _starts;
 
   CStringList.fromBytes(this._bytes);
   CStringList.fromList(List<String> list) {
@@ -15,22 +14,23 @@ class CStringList  extends ListBase<String> implements List<String>  {
     });
     _bytes = new td.Uint8List(lengthInBytes);
     var offset = 0;
-    list.forEach((str){
+    list.forEach((str) {
       var bytes = utf8.encode(str);
       _bytes.setRange(offset, offset + bytes.length, bytes);
       offset += bytes.length + 1;
     });
+    _buildStarts();
   }
 
   td.Uint8List toBytes() => _bytes;
   int get lengthInBytes => _bytes.length;
 
-  td.Int32List _buildStarts() {
+  td.Uint64List _buildStarts() {
     var len = 0;
     for (int i = 0; i < _bytes.length; i++) {
       if (_bytes[i] == 0) len++;
     }
-    _starts = new td.Int32List(len + 1);
+    _starts = new td.Uint64List(len + 1);
     _starts[0] = 0;
     var offset = 0;
 
@@ -43,7 +43,7 @@ class CStringList  extends ListBase<String> implements List<String>  {
     return _starts;
   }
 
-  td.Int32List get starts => _starts == null ? _buildStarts() : _starts;
+  td.Uint64List get starts => _starts == null ? _buildStarts() : _starts;
 
   int get length => starts.length - 1;
 
@@ -52,8 +52,7 @@ class CStringList  extends ListBase<String> implements List<String>  {
   operator [](int i) {
     var start = starts[i];
     var end = starts[i + 1];
-    return utf8.decode(_bytes.sublist(start, end-1));
-    return new String.fromCharCodes(_bytes, start, end - 1);
+    return utf8.decode(_bytes.sublist(start, end - 1));
   }
 
   operator []=(int i, String value) => throw "list is read only";
