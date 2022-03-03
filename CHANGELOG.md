@@ -15,3 +15,6 @@
 
 ## 1.3.0
 - CStringList : starts as uint64  
+
+## 1.3.1
+- CStringList : starts as uint64/int32

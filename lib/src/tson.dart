@@ -9,6 +9,7 @@ import './utils/chunked_stream_iterator.dart' as utils;
 import 'package:typed_data/typed_data.dart' as tb;
 
 import 'string_list.dart';
+
 part './ser/binary_serializer.dart';
 part './ser/stream_serializer.dart';
 part './ser/stream_deser.dart';
