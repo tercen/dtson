@@ -74,7 +74,7 @@ class _StreamSerializer {
   //Null terminated string
   _addString(String object) {
     _addType(TsonSpec.STRING_TYPE);
-    _addController(object.codeUnits);
+    _addController(utf8.encode(object));
     _addController([0]);
   }
 
