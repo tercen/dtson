@@ -1,19 +1,26 @@
 part of tson;
 
 class _BinarySerializer {
-  td.Uint8List _bytes;
-  td.ByteData _byteData;
-  int _intByteOffset;
-  int _byteOffset;
+  late td.Uint8List _bytes;
+  late td.ByteData _byteData;
+  late int _intByteOffset;
+  late int _byteOffset;
 
   _BinarySerializer.from(object) {
-//    if (object is List<String>) {
-//      object = new  CStringList.fromList(object);
-//    }
-    _initializeFromObject(object);
+    _intByteOffset = 0;
+    var size = 0;
+    size = _computeObjectSize(TsonSpec.VERSION);
+    size += _computeMapOrListSize(object);
+
+    _bytes = new td.Uint8List(size);
+    _byteOffset = _intByteOffset;
+    _byteData = new td.ByteData.view(_bytes.buffer, _bytes.offsetInBytes);
+    _addString(TsonSpec.VERSION);
+    _add(object);
+    _byteOffset = _intByteOffset;
   }
 
-  _BinarySerializer.fromBytes(this._bytes, [int offset]) {
+  _BinarySerializer.fromBytes(this._bytes, [int? offset]) {
     _intByteOffset = offset == null ? 0 : offset;
     _byteData = new td.ByteData.view(_bytes.buffer, _bytes.offsetInBytes);
   }
@@ -225,7 +232,7 @@ class _BinarySerializer {
 
   td.Uint8List toBytes() => _bytes;
 
-  Object toObject() {
+  Object? toObject() {
     _byteOffset = _intByteOffset;
     var version = _readObject();
     if (version != TsonSpec.VERSION)
@@ -279,9 +286,9 @@ class _BinarySerializer {
 
   List _readList() {
     final len = _readLength();
-    var answer = new List(len);
+    var answer = [];
     for (int i = 0; i < len; i++) {
-      answer[i] = _readObject();
+      answer.add(_readObject());
     }
     return answer;
   }
@@ -360,7 +367,7 @@ class _BinarySerializer {
     }
   }
 
-  Object _readObject() {
+  Object? _readObject() {
     var type = _readObjectType();
     if (type == TsonSpec.NULL_TYPE) {
       return null;

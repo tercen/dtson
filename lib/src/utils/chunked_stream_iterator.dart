@@ -92,7 +92,7 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
   /// Buffered items from a previous chunk. Items in this list should not have
   /// been read by the user.
-  List<T> _buffered;
+  late List<T> _buffered;
 
   /// Instance variable representing an empty list object, used as the empty
   /// default state for [_buffered]. Take caution not to write code that
@@ -270,7 +270,7 @@ extension ChunkedStreamIteratorByteStreamExt on ChunkedStreamIterator<int> {
 /// [Uint8List] will not be a view on a larger buffer, so such mistakes can go
 /// undetected. Consider using [Uint8List.sublistView], to create subviews if
 /// necessary.
-Future<Uint8List> readByteStream(Stream<List<int>> input, {int maxSize}) async {
+Future<Uint8List> readByteStream(Stream<List<int>> input, {int? maxSize}) async {
   ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
     throw ArgumentError.value(maxSize, 'maxSize must be positive, if given');

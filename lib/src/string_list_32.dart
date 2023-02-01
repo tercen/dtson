@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'string_list.dart';
 
 class CStringListImpl extends CStringList {
-  td.Uint8List _bytes;
-  td.Int32List _starts;
+  late td.Uint8List _bytes;
+  td.Int32List? _starts;
 
   CStringListImpl.fromBytes(this._bytes);
   CStringListImpl.fromList(List<String> list) {
-    var lengthInBytes = list.fold(0, (len, str) {
+    var lengthInBytes = list.fold(0, (dynamic len, str) {
       if (str == null) throw new ArgumentError("Null values are not allowed.");
       return len + utf8.encode(str).length + 1;
     });
@@ -25,25 +25,25 @@ class CStringListImpl extends CStringList {
   td.Uint8List toBytes() => _bytes;
   int get lengthInBytes => _bytes.length;
 
-  td.Int32List _buildStarts() {
+  td.Int32List? _buildStarts() {
     var len = 0;
     for (int i = 0; i < _bytes.length; i++) {
       if (_bytes[i] == 0) len++;
     }
     _starts = new td.Int32List(len + 1);
-    _starts[0] = 0;
+    _starts![0] = 0;
     var offset = 0;
 
     for (int i = 0; i < len; i++) {
       var start = offset;
       while (_bytes[offset] != 0) offset++;
       offset += 1;
-      _starts[i + 1] = _starts[i] + (offset - start);
+      _starts![i + 1] = _starts![i] + (offset - start);
     }
     return _starts;
   }
 
-  td.Int32List get starts => _starts == null ? _buildStarts() : _starts;
+  td.Int32List get starts => _starts == null ? _buildStarts()! : _starts!;
 
   int get length => starts.length - 1;
 

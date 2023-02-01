@@ -1,7 +1,7 @@
 part of tson;
 
 class _StreamDeserializer {
-  utils.ChunkedStreamIterator<int> reader;
+  late utils.ChunkedStreamIterator<int> reader;
   dynamic object;
 
   _StreamDeserializer(Stream<List<int>> stream) {
@@ -101,9 +101,9 @@ class _StreamDeserializer {
 
   Future<List> _readList() async {
     final len = await _readLength();
-    var answer = List(len);
+    var answer = [];
     for (int i = 0; i < len; i++) {
-      answer[i] = await _readObject();
+      answer.add(await _readObject());
     }
     return answer;
   }

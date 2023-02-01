@@ -11,7 +11,7 @@ main() {
 
 
     test('Simple string list', () {
-      var bytes = TSON.encode( <String>["42.0", null]);
+      var bytes = TSON.encode( <String?>["42.0", null]);
       TSON.decode(bytes);
 
       bytes = TSON.encode([null]);

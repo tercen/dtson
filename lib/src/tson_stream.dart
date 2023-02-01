@@ -5,8 +5,8 @@ import 'tson.dart' as TSON;
 import 'package:async/async.dart';
 
 class TsonStreamDecoderTransformer
-    implements StreamTransformer<List<int>, Object> {
-  static Object decode(Uint8List bytes) {
+    implements StreamTransformer<List<int>, Object?> {
+  static Object? decode(Uint8List bytes) {
     final len = readLength(bytes);
     if (bytes.length < len + 4)
 //    if (bytes.length + 4 < len)
@@ -24,7 +24,7 @@ class TsonStreamDecoderTransformer
         .getUint32(bytes.offsetInBytes, Endian.little);
   }
 
-  StreamTransformer _transformer;
+  late StreamTransformer _transformer;
 
   List<int> _buffer = [];
 
@@ -34,7 +34,7 @@ class TsonStreamDecoderTransformer
     _buffer = new Uint8List(0);
   }
 
-  void handleData(data, EventSink<Object> sink) {
+  void handleData(data, EventSink<Object?> sink) {
 //    print('$this handleData data.length=${data.length} ');
     _addBuffer(data);
     _readObject(sink);
@@ -50,26 +50,26 @@ class TsonStreamDecoderTransformer
   /*
   Recursively read objects from the buffer and add them to the sink
    */
-  void _readObject(EventSink<Object> sink) {
+  void _readObject(EventSink<Object?> sink) {
     if (_buffer.length < 4) return;
 
-    var len = readLength(_buffer);
+    var len = readLength(_buffer as Uint8List);
 
     if (_buffer.length >= len + 4) {
-      sink.add(decode(_buffer));
+      sink.add(decode(_buffer as Uint8List));
       _buffer = _buffer.sublist(len + 4);
       _readObject(sink);
     }
   }
 
-  void handleDone(EventSink<Object> sink) {
+  void handleDone(EventSink<Object?> sink) {
     _readObject(sink);
     assert(_buffer.length == 0);
     sink.close();
   }
 
   @override
-  Stream<Object> bind(Stream<List> stream) => _transformer.bind(stream);
+  Stream<Object?> bind(Stream<List> stream) => _transformer.bind(stream);
 
   @override
   StreamTransformer<RS, RT> cast<RS, RT>() => StreamTransformer.castFrom(this);
@@ -87,7 +87,7 @@ class TsonStreamEncoderTransformer
     return result;
   }
 
-  StreamTransformer<dynamic, List<int>> _transformer;
+  late StreamTransformer<dynamic, List<int>> _transformer;
 
   TsonStreamEncoderTransformer() {
     _transformer = new StreamTransformer.fromHandlers(handleData: _handleData);

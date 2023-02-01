@@ -38,7 +38,7 @@ Stream<List<int>> stream(object) {
   return new _StreamSerializer.from(object).controller.stream;
 }
 
-Object decode(bytesOrBuffer, [int offset]) {
+Object? decode(bytesOrBuffer, [int? offset]) {
   td.Uint8List bytes;
   if (bytesOrBuffer is td.ByteBuffer){
     bytes = new td.Uint8List.view(bytesOrBuffer);
@@ -49,7 +49,7 @@ Object decode(bytesOrBuffer, [int offset]) {
 }
 
 class TsonError {
-  Map _data;
+  late Map _data;
   TsonError(int statusCode, String error, String reason) {
     _data = {"statusCode": statusCode, "error": error, "reason": reason};
   }

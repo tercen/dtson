@@ -9,20 +9,19 @@ class TypedTsonStreamProvider {
 }
 
 class _StreamSerializer {
-  Object _currentObject;
+  Object? _currentObject;
 
-  StreamController<List<int>> controller;
+  late StreamController<List<int>> controller;
 
-  td.Uint8List _byte4Buffer;
-  td.ByteData _byte4DataBuffer;
+  late td.Uint8List _byte4Buffer;
+  late td.ByteData _byte4DataBuffer;
 
-  td.Uint8List _byte8Buffer;
-  td.ByteData _byte8DataBuffer;
+  late td.Uint8List _byte8Buffer;
+  late td.ByteData _byte8DataBuffer;
 
   _StreamSerializer.from(object) {
     _byte4Buffer = new td.Uint8List(4);
     _byte4DataBuffer = new td.ByteData.view(_byte4Buffer.buffer);
-
     _byte8Buffer = new td.Uint8List(8);
     _byte8DataBuffer = new td.ByteData.view(_byte8Buffer.buffer);
 
@@ -48,10 +47,10 @@ class _StreamSerializer {
 
   _onCancel() {
     _currentObject = null;
-    _byte4Buffer = null;
-    _byte4DataBuffer = null;
-    _byte8Buffer = null;
-    _byte8DataBuffer = null;
+    _byte4Buffer = new td.Uint8List(4);
+    _byte4DataBuffer = new td.ByteData.view(_byte4Buffer.buffer);
+    _byte8Buffer = new td.Uint8List(8);
+    _byte8DataBuffer = new td.ByteData.view(_byte8Buffer.buffer);
   }
 
   _addController(List<int> bytes) {
