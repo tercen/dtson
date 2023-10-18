@@ -34,12 +34,12 @@ main() {
     });
 
     test('Simple int32 list', () {
-      var bytes = TSON.encode(new td.Int32List.fromList([42, 42]));
+      var bytes = TSON.encode(td.Int32List.fromList([42, 42]));
       print(bytes);
     });
 
     test('Simple cstring list', () {
-      var bytes = TSON.encode(new TSON.CStringList.fromList(["42.0", "42"]));
+      var bytes = TSON.encode(TSON.CStringList.fromList(["42.0", "42"]));
       print(bytes);
     });
 
@@ -56,9 +56,9 @@ main() {
 
     test('Simple map of int32, float32 and float64 list', () {
       var bytes = TSON.encode({
-        "i": new td.Int32List.fromList([42]),
-        "f": new td.Float32List.fromList([42.0]),
-        "d": new td.Float64List.fromList([42.0])
+        "i": td.Int32List.fromList([42]),
+        "f": td.Float32List.fromList([42.0]),
+        "d": td.Float64List.fromList([42.0])
       });
       print(bytes);
     });
@@ -66,7 +66,7 @@ main() {
     test('factor', () {
       var map = {
         "type": "factor",
-        "dictionary": new TSON.CStringList.fromList(["sample1", "sample2"]),
+        "dictionary": TSON.CStringList.fromList(["sample1", "sample2"]),
         "data": [0,0,1,1,0,1,1,1,1,0,0,0,0,1]
       };
 
@@ -92,16 +92,16 @@ main() {
           {"string": "42"},
           ["42", 42]
         ],
-        "uint8": new td.Uint8List.fromList([42, 42]),
-        "uint16": new td.Uint16List.fromList([42, 42]),
-        "uint32": new td.Uint32List.fromList([42, 42]),
-        "int8": new td.Int8List.fromList([-42, 42]),
-        "int16": new td.Int16List.fromList([42, 42]),
-        "int32": new td.Int32List.fromList([42, 42]),
-        "int64": new td.Int64List.fromList([42, 42]),
-        "float32": new td.Float32List.fromList([42.0, 42.0]),
-        "float64": new td.Float64List.fromList([42.0, 42.0]),
-        "cstringlist": new TSON.CStringList.fromList(["42.0", "42"])
+        "uint8": td.Uint8List.fromList([42, 42]),
+        "uint16": td.Uint16List.fromList([42, 42]),
+        "uint32": td.Uint32List.fromList([42, 42]),
+        "int8": td.Int8List.fromList([-42, 42]),
+        "int16": td.Int16List.fromList([42, 42]),
+        "int32": td.Int32List.fromList([42, 42]),
+        "int64": td.Int64List.fromList([42, 42]),
+        "float32": td.Float32List.fromList([42.0, 42.0]),
+        "float64": td.Float64List.fromList([42.0, 42.0]),
+        "cstringlist": TSON.CStringList.fromList(["42.0", "42"])
       };
 
       var tson_map = TSON.decode(TSON.encode(map));

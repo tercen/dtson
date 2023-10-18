@@ -1,17 +1,17 @@
 name: tson
 description: TSON, short for Typed JSON, is a binary-encoded serialization of JSON-like document that support javascript typed data and CStringList. A CStringList can efficiently store very large collection of strings, it internally stores its elements in a byte array.
 version: 1.4.0
-author: am <alexandre.maurel@gmail.com>
 homepage: https://github.com/amaurel/TSON
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ^3.0.0
 
 dependencies:
   typed_data:
-  chunked_stream: ^1.2.0
+  chunked_stream: ^1.4.2
 
 dev_dependencies:
   test:
+  lints: ^2.0.0
   build_runner:
   build_web_compilers:

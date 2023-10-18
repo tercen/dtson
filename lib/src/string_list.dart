@@ -18,10 +18,14 @@ abstract class CStringList extends ListBase<String> implements List<String> {
 
   List<int> get starts;
 
+  @override
   int get length;
 
-  void set length(int newLength);
+  @override
+  set length(int newLength);
 
+  @override
   operator [](int i);
+  @override
   operator []=(int i, String value);
 }

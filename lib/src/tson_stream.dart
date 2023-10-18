@@ -8,19 +8,21 @@ class TsonStreamDecoderTransformer
     implements StreamTransformer<List<int>, Object?> {
   static Object? decode(Uint8List bytes) {
     final len = readLength(bytes);
-    if (bytes.length < len + 4)
-//    if (bytes.length + 4 < len)
-      throw new ArgumentError.value(
+    if (bytes.length < len + 4) {
+      //    if (bytes.length + 4 < len)
+      throw ArgumentError.value(
           len, 'TsonStreamDecoderTransformer.decode : wrong length');
+    }
     return TSON
-        .decode(new Uint8List.view(bytes.buffer, bytes.offsetInBytes + 4, len));
+        .decode(Uint8List.view(bytes.buffer, bytes.offsetInBytes + 4, len));
   }
 
   static int readLength(Uint8List bytes) {
-    if (bytes.length < 4)
-      throw new ArgumentError.value(bytes.length,
+    if (bytes.length < 4) {
+      throw ArgumentError.value(bytes.length,
           'TsonStreamDecoderTransformer.readLength : wrong length');
-    return new ByteData.view(bytes.buffer)
+    }
+    return ByteData.view(bytes.buffer)
         .getUint32(bytes.offsetInBytes, Endian.little);
   }
 
@@ -29,9 +31,9 @@ class TsonStreamDecoderTransformer
   List<int> _buffer = [];
 
   TsonStreamDecoderTransformer() {
-    _transformer = new StreamTransformer.fromHandlers(
+    _transformer = StreamTransformer.fromHandlers(
         handleData: handleData, handleDone: handleDone);
-    _buffer = new Uint8List(0);
+    _buffer = Uint8List(0);
   }
 
   void handleData(data, EventSink<Object?> sink) {
@@ -41,7 +43,7 @@ class TsonStreamDecoderTransformer
   }
 
   void _addBuffer(List<int> bytes) {
-    var tmp = new Uint8List(_buffer.length + bytes.length);
+    var tmp = Uint8List(_buffer.length + bytes.length);
     tmp.setRange(0, _buffer.length, _buffer);
     tmp.setRange(_buffer.length, _buffer.length + bytes.length, bytes);
     _buffer = tmp;
@@ -64,7 +66,7 @@ class TsonStreamDecoderTransformer
 
   void handleDone(EventSink<Object?> sink) {
     _readObject(sink);
-    assert(_buffer.length == 0);
+    assert(_buffer.isEmpty);
     sink.close();
   }
 
@@ -79,8 +81,8 @@ class TsonStreamEncoderTransformer
     implements StreamTransformer<dynamic, List<int>> {
   static List<int> encode(object) {
     var bytes = TSON.encode(object);
-    var result = new Uint8List(bytes.length + 4);
-    var byteData = new ByteData.view(result.buffer);
+    var result = Uint8List(bytes.length + 4);
+    var byteData = ByteData.view(result.buffer);
     byteData.setUint32(0, bytes.length, Endian.little);
     result.setRange(4, result.length, bytes);
 
@@ -90,7 +92,7 @@ class TsonStreamEncoderTransformer
   late StreamTransformer<dynamic, List<int>> _transformer;
 
   TsonStreamEncoderTransformer() {
-    _transformer = new StreamTransformer.fromHandlers(handleData: _handleData);
+    _transformer = StreamTransformer.fromHandlers(handleData: _handleData);
   }
 
   void _handleData(object, EventSink<List<int>> sink) =>
@@ -104,7 +106,7 @@ class TsonStreamEncoderTransformer
 }
 
 StreamSinkTransformer<Map, List<int>> streamSinkTransformer() {
-  return new StreamSinkTransformer.fromHandlers(
+  return StreamSinkTransformer.fromHandlers(
       handleData: (Map data, EventSink<List<int>> sink) {
     sink.add(TSON.encode(data));
   }, handleError:

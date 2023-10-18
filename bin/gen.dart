@@ -2,7 +2,6 @@
  import 'dart:io';
 import 'dart:convert';
 import 'package:tson/tson.dart' as TSON;
-import 'dart:typed_data' as td;
 
 main(){
 //  var map = {};
@@ -18,11 +17,11 @@ main(){
 //  new File('./bin/test_data.json').writeAsStringSync(json.encode(map));
 
  for (var i = 0 ; i < 10 ; i++){
-   var watch = new Stopwatch()..start();
-   TSON.decode(new File('./bin/test_data.tson').readAsBytesSync());
+   var watch = Stopwatch()..start();
+   TSON.decode(File('./bin/test_data.tson').readAsBytesSync());
    print('${watch.elapsedMicroseconds} us');
    watch.reset();
-   json.decode(new File('./bin/test_data.json').readAsStringSync());
+   json.decode(File('./bin/test_data.json').readAsStringSync());
    print('${watch.elapsedMicroseconds} us');
  }
 

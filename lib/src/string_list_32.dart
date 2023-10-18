@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:typed_data' as td;
 import 'dart:convert';
 import 'string_list.dart';
@@ -10,19 +9,20 @@ class CStringListImpl extends CStringList {
   CStringListImpl.fromBytes(this._bytes);
   CStringListImpl.fromList(List<String> list) {
     var lengthInBytes = list.fold(0, (dynamic len, str) {
-      if (str == null) throw new ArgumentError("Null values are not allowed.");
       return len + utf8.encode(str).length + 1;
     });
-    _bytes = new td.Uint8List(lengthInBytes);
+    _bytes = td.Uint8List(lengthInBytes);
     var offset = 0;
-    list.forEach((str) {
+    for (var str in list) {
       var bytes = utf8.encode(str);
       _bytes.setRange(offset, offset + bytes.length, bytes);
       offset += bytes.length + 1;
-    });
+    }
   }
 
+  @override
   td.Uint8List toBytes() => _bytes;
+  @override
   int get lengthInBytes => _bytes.length;
 
   td.Int32List? _buildStarts() {
@@ -30,31 +30,37 @@ class CStringListImpl extends CStringList {
     for (int i = 0; i < _bytes.length; i++) {
       if (_bytes[i] == 0) len++;
     }
-    _starts = new td.Int32List(len + 1);
+    _starts = td.Int32List(len + 1);
     _starts![0] = 0;
     var offset = 0;
 
     for (int i = 0; i < len; i++) {
       var start = offset;
-      while (_bytes[offset] != 0) offset++;
+      while (_bytes[offset] != 0) {
+        offset++;
+      }
       offset += 1;
       _starts![i + 1] = _starts![i] + (offset - start);
     }
     return _starts;
   }
 
+  @override
   td.Int32List get starts => _starts == null ? _buildStarts()! : _starts!;
 
+  @override
   int get length => starts.length - 1;
 
-  void set length(int newLength) => throw "list is read only";
+  @override
+  set length(int newLength) => throw "list is read only";
 
+  @override
   operator [](int i) {
     var start = starts[i];
     var end = starts[i + 1];
     return utf8.decode(_bytes.sublist(start, end - 1));
-    return new String.fromCharCodes(_bytes, start, end - 1);
   }
 
+  @override
   operator []=(int i, String value) => throw "list is read only";
 }

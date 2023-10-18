@@ -20,14 +20,14 @@ class _StreamSerializer {
   late td.ByteData _byte8DataBuffer;
 
   _StreamSerializer.from(object) {
-    _byte4Buffer = new td.Uint8List(4);
-    _byte4DataBuffer = new td.ByteData.view(_byte4Buffer.buffer);
-    _byte8Buffer = new td.Uint8List(8);
-    _byte8DataBuffer = new td.ByteData.view(_byte8Buffer.buffer);
+    _byte4Buffer = td.Uint8List(4);
+    _byte4DataBuffer = td.ByteData.view(_byte4Buffer.buffer);
+    _byte8Buffer = td.Uint8List(8);
+    _byte8DataBuffer = td.ByteData.view(_byte8Buffer.buffer);
 
     _currentObject = object;
 
-    controller = new StreamController(
+    controller = StreamController(
         onListen: _onListen, onResume: _onResume, onCancel: _onCancel);
   }
 
@@ -47,14 +47,14 @@ class _StreamSerializer {
 
   _onCancel() {
     _currentObject = null;
-    _byte4Buffer = new td.Uint8List(4);
-    _byte4DataBuffer = new td.ByteData.view(_byte4Buffer.buffer);
-    _byte8Buffer = new td.Uint8List(8);
-    _byte8DataBuffer = new td.ByteData.view(_byte8Buffer.buffer);
+    _byte4Buffer = td.Uint8List(4);
+    _byte4DataBuffer = td.ByteData.view(_byte4Buffer.buffer);
+    _byte8Buffer = td.Uint8List(8);
+    _byte8DataBuffer = td.ByteData.view(_byte8Buffer.buffer);
   }
 
   _addController(List<int> bytes) {
-    controller.add(new td.Uint8List.fromList(bytes));
+    controller.add(td.Uint8List.fromList(bytes));
   }
 
   _addType(int type) {
@@ -95,7 +95,7 @@ class _StreamSerializer {
   }
 
   _addTypedData(td.TypedData object) {
-    var len;
+    int len;
     if (object is td.Uint8List) {
       _addType(TsonSpec.LIST_UINT8_TYPE);
       len = object.length;
@@ -127,12 +127,12 @@ class _StreamSerializer {
       _addType(TsonSpec.LIST_UINT64_TYPE);
       len = object.length;
     } else {
-      throw new TsonError(404, "unknown.typed.data", "unknown typed data");
+      throw TsonError(404, "unknown.typed.data", "unknown typed data");
     }
 
     _addLength(len);
 
-    var bytes = new td.Uint8List.view(
+    var bytes = td.Uint8List.view(
         object.buffer, object.offsetInBytes, len * object.elementSizeInBytes);
 
     _addController(bytes);
@@ -151,9 +151,10 @@ class _StreamSerializer {
     _addType(TsonSpec.MAP_TYPE);
     _addLength(object.length);
     for (var k in object.keys) {
-      if (k is! String)
-        throw new TsonError(
+      if (k is! String) {
+        throw TsonError(
             500, "wrong.map.key.format", "Map key must be a String");
+      }
       _add(k);
 
       await _add(object[k]);
@@ -196,8 +197,8 @@ class _StreamSerializer {
     } else if (object is TypedTsonStreamProvider) {
       await _addStream(object);
     } else {
-      throw new TsonError(
-          404, "unknown.value.type", "Unknow value type : ${object}");
+      throw TsonError(
+          404, "unknown.value.type", "Unknow value type : $object");
     }
   }
 

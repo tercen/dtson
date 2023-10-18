@@ -1,10 +1,8 @@
 library tson;
 
-import 'dart:math';
 import 'dart:typed_data' as td;
 import 'dart:async';
 import 'dart:convert';
-// import 'package:chunked_stream/chunked_stream.dart';
 import './utils/chunked_stream_iterator.dart' as utils;
 import 'package:typed_data/typed_data.dart' as tb;
 
@@ -15,7 +13,7 @@ part './ser/stream_serializer.dart';
 part './ser/stream_deser.dart';
 
 td.Uint8List encode(object) {
-  return new _BinarySerializer.from(object).toBytes();
+  return _BinarySerializer.from(object).toBytes();
 }
 
 Future<dynamic> deserializeStream(Stream<List<int>> stream) =>
@@ -23,29 +21,31 @@ Future<dynamic> deserializeStream(Stream<List<int>> stream) =>
 
 Future<td.Uint8List> encodeAsync(object) async {
   var s = stream(object);
-  tb.Uint8Buffer buffer = await s.fold(new tb.Uint8Buffer(),
+  tb.Uint8Buffer buffer = await s.fold(tb.Uint8Buffer(),
       (tb.Uint8Buffer buffer, List<int> element) {
 //    print('encodeAsync previous $buffer element $element');
     buffer.addAll(element);
     return buffer;
   });
 
-  return new td.Uint8List.view(
+  return td.Uint8List.view(
       buffer.buffer, buffer.offsetInBytes, buffer.lengthInBytes);
 }
 
 Stream<List<int>> stream(object) {
-  return new _StreamSerializer.from(object).controller.stream;
+  return _StreamSerializer.from(object).controller.stream;
 }
 
 Object? decode(bytesOrBuffer, [int? offset]) {
   td.Uint8List bytes;
   if (bytesOrBuffer is td.ByteBuffer){
-    bytes = new td.Uint8List.view(bytesOrBuffer);
+    bytes = td.Uint8List.view(bytesOrBuffer);
   } else if (bytesOrBuffer is td.Uint8List){
     bytes = bytesOrBuffer;
-  } else throw 'bad type';
-  return new _BinarySerializer.fromBytes(bytes, offset).toObject();
+  } else {
+    throw 'bad type';
+  }
+  return _BinarySerializer.fromBytes(bytes, offset).toObject();
 }
 
 class TsonError {
@@ -57,7 +57,8 @@ class TsonError {
   String get error => _data["error"];
   String get reason => _data["reason"];
 
-  String toString() => '${this.runtimeType}($statusCode, "$error", "$reason")';
+  @override
+  String toString() => '$runtimeType($statusCode, "$error", "$reason")';
 }
 
 class TsonSpec {

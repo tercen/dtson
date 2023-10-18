@@ -5,7 +5,7 @@ class _StreamDeserializer {
   dynamic object;
 
   _StreamDeserializer(Stream<List<int>> stream) {
-    this.reader = utils.ChunkedStreamIterator(stream);
+    reader = utils.ChunkedStreamIterator(stream);
   }
 
   Future<td.Uint8List> read(int size) async {
@@ -16,9 +16,10 @@ class _StreamDeserializer {
 
   Future<dynamic> toObject() async {
     var version = await _readObject();
-    if (version != TsonSpec.VERSION)
-      throw new TsonError(500, "version.mismatch",
+    if (version != TsonSpec.VERSION) {
+      throw TsonError(500, "version.mismatch",
           "TSON version mismatch, found : $version , expected : ${TsonSpec.VERSION}");
+    }
     var object = await _readObject();
     await reader.cancel();
     return object;
@@ -54,7 +55,7 @@ class _StreamDeserializer {
 
   Future<String> _readString() async {
     var buffer = tb.Uint8Buffer();
-    var byte;
+    int byte;
 
     while ((byte = (await read(1)).first) > 0) {
       buffer.add(byte);
@@ -64,7 +65,7 @@ class _StreamDeserializer {
 
   Future<Map> _readMap() async {
     final len = await _readLength();
-    var answer = Map();
+    var answer = {};
     for (int i = 0; i < len; i++) {
       var key = await _readObject();
       if (key is! String) {
@@ -135,7 +136,7 @@ class _StreamDeserializer {
     } else if (type == TsonSpec.LIST_UINT64_TYPE) {
       return 8;
     } else {
-      throw new TsonError(
+      throw TsonError(
           404, "unknown.typed.data", "Unknown typed data $type");
     }
   }
@@ -156,25 +157,25 @@ class _StreamDeserializer {
     if (type == TsonSpec.LIST_UINT8_TYPE) {
       return answer;
     } else if (type == TsonSpec.LIST_UINT16_TYPE) {
-      return new td.Uint16List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Uint16List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_UINT32_TYPE) {
-      return new td.Uint32List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Uint32List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_INT8_TYPE) {
-      return new td.Int8List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Int8List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_INT16_TYPE) {
-      return new td.Int16List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Int16List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_INT32_TYPE) {
-      return new td.Int32List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Int32List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_INT64_TYPE) {
-      return new td.Int64List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Int64List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_FLOAT32_TYPE) {
-      return new td.Float32List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Float32List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_FLOAT64_TYPE) {
-      return new td.Float64List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Float64List.view(answer.buffer, answer.offsetInBytes, len);
     } else if (type == TsonSpec.LIST_UINT64_TYPE) {
-      return new td.Uint64List.view(answer.buffer, answer.offsetInBytes, len);
+      return td.Uint64List.view(answer.buffer, answer.offsetInBytes, len);
     } else {
-      throw new TsonError(404, "unknown.typed.data", "Unknown typed data");
+      throw TsonError(404, "unknown.typed.data", "Unknown typed data");
     }
   }
 }
