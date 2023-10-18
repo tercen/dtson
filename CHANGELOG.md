@@ -20,5 +20,7 @@
 - CStringList : starts as uint64/int32
 
 ## 1.4.0
-- CStringList : import from root
 - Dart3
+
+## 1.4.1
+- CStringList : import from root
