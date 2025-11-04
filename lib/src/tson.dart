@@ -38,14 +38,26 @@ Stream<List<int>> stream(object) {
 
 Object? decode(bytesOrBuffer, [int? offset]) {
   td.Uint8List bytes;
-  if (bytesOrBuffer is td.ByteBuffer){
+  if (bytesOrBuffer is td.ByteBuffer) {
     bytes = td.Uint8List.view(bytesOrBuffer);
-  } else if (bytesOrBuffer is td.Uint8List){
+  } else if (bytesOrBuffer is td.Uint8List) {
     bytes = bytesOrBuffer;
-  } else {
-    throw 'bad type';
   }
-  return _BinarySerializer.fromBytes(bytes, offset).toObject();
+  // else if (bytesOrBuffer is JSArrayBuffer) {
+  //   final jsArrayBuffer = request.response as JSArrayBuffer;
+  //   final byteBuffer = jsArrayBuffer.toDart;
+  //   final uint8List = byteBuffer.asUint8List();
+  // }
+
+  else {
+    try {
+      bytes = bytesOrBuffer.toDart.asUint8List();
+    } catch (e) {
+      throw ArgumentError(
+          'Tson -- bad type: expected ByteBuffer or Uint8List or JSArrayBuffer');
+    }
+    // throw ArgumentError('Tson -- bad type: expected ByteBuffer or Uint8List');
+  }
 }
 
 class TsonError {
