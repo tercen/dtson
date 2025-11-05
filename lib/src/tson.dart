@@ -44,42 +44,10 @@ Object? decode(bytesOrBuffer, [int? offset]) {
     bytes = td.Uint8List.view(bytesOrBuffer);
   } else if (bytesOrBuffer is td.Uint8List) {
     bytes = bytesOrBuffer;
-  } else {
-    // Handle JS interop types for wasm
-    try {
-      // First try: check if it's already a JSAny/JSObject with toDart
-      if (bytesOrBuffer is JSAny) {
-        // Try to convert JS typed array to Dart Uint8List
-        final jsObj = bytesOrBuffer as JSAny;
-
-        // Check if it has a 'length' property (TypedArray-like)
-        try {
-          final jsObjAsObject = jsObj as JSObject;
-          if (jsObjAsObject.hasProperty('length'.toJS).toDart) {
-            final length =
-                (jsObjAsObject.getProperty('length'.toJS) as JSNumber)
-                    .toDartInt;
-            final out = td.Uint8List(length);
-            for (var i = 0; i < length; i++) {
-              final v = jsObjAsObject.getProperty(i.toJS) as JSNumber;
-              out[i] = v.toDartInt;
-            }
-            bytes = out;
-          } else {
-            throw ArgumentError('JS object does not have length property');
-          }
-        } catch (e) {
-          // If casting to JSObject fails, try toDart helper
-          bytes = jsObj.dartify() as td.Uint8List;
-        }
-      } else {
-        // Fallback: try the old toDart.asUint8List() pattern
-        bytes = bytesOrBuffer.toDart.asUint8List();
-      }
-    } catch (e) {
-      throw ArgumentError(
-          'Tson -- bad type: expected ByteBuffer, Uint8List, or JSArrayBuffer. Got: ${bytesOrBuffer.runtimeType}. Error: $e');
-    }
+  } 
+  else {
+    throw ArgumentError.value(
+        bytesOrBuffer, 'TSON.decode: invalid argument type ${bytesOrBuffer.runtimeType}');
   }
   return _BinarySerializer.fromBytes(bytes, offset).toObject();
 }
