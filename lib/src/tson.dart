@@ -3,6 +3,8 @@ library tson;
 import 'dart:typed_data' as td;
 import 'dart:async';
 import 'dart:convert';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import './utils/chunked_stream_iterator.dart' as utils;
 import 'package:typed_data/typed_data.dart' as tb;
 
@@ -42,22 +44,44 @@ Object? decode(bytesOrBuffer, [int? offset]) {
     bytes = td.Uint8List.view(bytesOrBuffer);
   } else if (bytesOrBuffer is td.Uint8List) {
     bytes = bytesOrBuffer;
-  }
-  // else if (bytesOrBuffer is JSArrayBuffer) {
-  //   final jsArrayBuffer = request.response as JSArrayBuffer;
-  //   final byteBuffer = jsArrayBuffer.toDart;
-  //   final uint8List = byteBuffer.asUint8List();
-  // }
-
-  else {
+  } else {
+    // Handle JS interop types for wasm
     try {
-      bytes = bytesOrBuffer.toDart.asUint8List();
+      // First try: check if it's already a JSAny/JSObject with toDart
+      if (bytesOrBuffer is JSAny) {
+        // Try to convert JS typed array to Dart Uint8List
+        final jsObj = bytesOrBuffer as JSAny;
+
+        // Check if it has a 'length' property (TypedArray-like)
+        try {
+          final jsObjAsObject = jsObj as JSObject;
+          if (jsObjAsObject.hasProperty('length'.toJS).toDart) {
+            final length =
+                (jsObjAsObject.getProperty('length'.toJS) as JSNumber)
+                    .toDartInt;
+            final out = td.Uint8List(length);
+            for (var i = 0; i < length; i++) {
+              final v = jsObjAsObject.getProperty(i.toJS) as JSNumber;
+              out[i] = v.toDartInt;
+            }
+            bytes = out;
+          } else {
+            throw ArgumentError('JS object does not have length property');
+          }
+        } catch (e) {
+          // If casting to JSObject fails, try toDart helper
+          bytes = jsObj.dartify() as td.Uint8List;
+        }
+      } else {
+        // Fallback: try the old toDart.asUint8List() pattern
+        bytes = bytesOrBuffer.toDart.asUint8List();
+      }
     } catch (e) {
       throw ArgumentError(
-          'Tson -- bad type: expected ByteBuffer or Uint8List or JSArrayBuffer');
+          'Tson -- bad type: expected ByteBuffer, Uint8List, or JSArrayBuffer. Got: ${bytesOrBuffer.runtimeType}. Error: $e');
     }
-    // throw ArgumentError('Tson -- bad type: expected ByteBuffer or Uint8List');
   }
+  return _BinarySerializer.fromBytes(bytes, offset).toObject();
 }
 
 class TsonError {
