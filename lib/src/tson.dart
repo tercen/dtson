@@ -3,8 +3,6 @@ library tson;
 import 'dart:typed_data' as td;
 import 'dart:async';
 import 'dart:convert';
-import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 import './utils/chunked_stream_iterator.dart' as utils;
 import 'package:typed_data/typed_data.dart' as tb;
 
