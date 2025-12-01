@@ -10,7 +10,7 @@ class _BinarySerializer {
     _intByteOffset = 0;
     var size = 0;
     size = _computeObjectSize(TsonSpec.VERSION);
-    size += _computeMapOrListSize(object);
+    size += _computeObjectSize(object);
 
     _bytes = td.Uint8List(size);
     _byteOffset = _intByteOffset;

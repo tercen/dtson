@@ -33,6 +33,48 @@ main() {
       print(bytes);
     });
 
+    test('Simple string', () {
+      var bytes = TSON.encode("hello");
+      print(bytes);
+      var decoded = TSON.decode(bytes);
+      expect(decoded, equals("hello"));
+    });
+
+    test('Simple integer', () {
+      var bytes = TSON.encode(42);
+      print(bytes);
+      var decoded = TSON.decode(bytes);
+      expect(decoded, equals(42));
+    });
+
+    test('Simple double', () {
+      var bytes = TSON.encode(42.5);
+      print(bytes);
+      var decoded = TSON.decode(bytes);
+      expect(decoded, equals(42.5));
+    });
+
+    test('Simple boolean true', () {
+      var bytes = TSON.encode(true);
+      print(bytes);
+      var decoded = TSON.decode(bytes);
+      expect(decoded, equals(true));
+    });
+
+    test('Simple boolean false', () {
+      var bytes = TSON.encode(false);
+      print(bytes);
+      var decoded = TSON.decode(bytes);
+      expect(decoded, equals(false));
+    });
+
+    test('Simple null', () {
+      var bytes = TSON.encode(null);
+      print(bytes);
+      var decoded = TSON.decode(bytes);
+      expect(decoded, equals(null));
+    });
+
     test('Simple int32 list', () {
       var bytes = TSON.encode(td.Int32List.fromList([42, 42]));
       print(bytes);
